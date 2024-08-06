@@ -26,5 +26,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "volta": {
+    "node": "20.12.0",
+    "npm": "10.8.1"
   }
 }
