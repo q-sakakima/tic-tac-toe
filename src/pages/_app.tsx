@@ -1,7 +1,18 @@
 import '../styles/styles.css';
-import { useState } from "react";
+import { FunctionComponent, useState } from "react";
 
-function Square({ value, onSquareClick }) {
+interface SquareProps {
+  value: string | null;
+  onSquareClick: () => void;
+}
+
+interface BoardProps {
+  xIsNext: boolean;
+  squares: string[];
+  onPlay: (nextSquares: string[]) => void;
+}
+
+const Square: FunctionComponent<SquareProps> = ({ value, onSquareClick }: SquareProps) => {
   return (
     <button className="square" onClick={onSquareClick}>
       {value}
@@ -9,29 +20,8 @@ function Square({ value, onSquareClick }) {
   );
 }
 
-function Board({ xIsNext, squares, onPlay }) {
-  function handleClick(i) {
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    const nextSquares = squares.slice();
-    if (xIsNext) {
-      nextSquares[i] = "X";
-    } else {
-      nextSquares[i] = "O";
-    }
-    onPlay(nextSquares);
-  }
-
-  const winner = calculateWinner(squares);
-  let status;
-  if (winner) {
-    status = "Winner: " + winner;
-  } else {
-    status = "Next player: " + (xIsNext ? "X" : "O");
-  }
-
-  function calculateWinner(squares) {
+const Board: FunctionComponent<BoardProps> = ({ xIsNext, squares, onPlay }: BoardProps) => {
+  const calculateWinner = (squares: string[]) => {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -53,6 +43,27 @@ function Board({ xIsNext, squares, onPlay }) {
       }
     }
     return null;
+  }
+
+  const handleClick = (i: number) => {
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    const nextSquares = squares.slice();
+    if (xIsNext) {
+      nextSquares[i] = "X";
+    } else {
+      nextSquares[i] = "O";
+    }
+    onPlay(nextSquares);
+  }
+
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = "Winner: " + winner;
+  } else {
+    status = "Next player: " + (xIsNext ? "X" : "O");
   }
 
   return (
@@ -78,18 +89,19 @@ function Board({ xIsNext, squares, onPlay }) {
 }
 
 export default function Game() {
+  // 9個の要素を持つ配列をnullで初期化
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
-  function handlePlay(nextSquares) {
+  const handlePlay = (nextSquares: string[]) => {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
-  function jumpTo(nextMove) {
+  const jumpTo = (nextMove: number) => {
     setCurrentMove(nextMove);
   }
 
