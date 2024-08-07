@@ -1,4 +1,4 @@
-import '../styles/styles.css';
+import '../styles/global.css';
 import { FunctionComponent, useState } from "react";
 
 interface SquareProps {
