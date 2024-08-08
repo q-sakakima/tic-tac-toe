@@ -1,5 +1,7 @@
 import { FunctionComponent } from "react";
 import { Mark } from "../../types/index";
+import { css , ClassNames } from "@emotion/react"; 
+import { square } from "./styled";
 
 type SquareProps = {
     value: Mark;
@@ -8,10 +10,12 @@ type SquareProps = {
 
 export const Square: FunctionComponent<SquareProps> = ({ value, onSquareClick }: SquareProps) => {
     return (
-        <>
-            <button className="square" onClick={onSquareClick}>
+        <ClassNames>
+            {({ css }) => (
+            <button className={css(square)} onClick={onSquareClick}>
                 {value}
             </button>
-        </>
+            )}
+        </ClassNames>
     );
 }
