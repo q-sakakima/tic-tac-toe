@@ -4,12 +4,12 @@ import { Square } from "../square";
 
 type BoardProps = {
     xIsNext: boolean;
-    squares: Array<Mark>;
-    onPlay: (nextSquares: Array<Mark>) => void;
+    squares: Mark[];
+    onPlay: (nextSquares: Mark[]) => void;
 }
 
 export const Board: FunctionComponent<BoardProps> = ({ xIsNext, squares, onPlay }: BoardProps) => {
-    const calculateWinner = (squares: Array<Mark>) => {
+    const calculateWinner = (squares: Mark[]) => {
         const lines = [
             [0, 1, 2],
             [3, 4, 5],
@@ -36,7 +36,7 @@ export const Board: FunctionComponent<BoardProps> = ({ xIsNext, squares, onPlay 
         if (calculateWinner(squares) || squares[i]) {
             return;
         }
-        const nextSquares: Array<Mark> = squares.slice();
+        const nextSquares: Mark[] = squares.slice();
         if (xIsNext) {
             nextSquares[i] = "X";
         } else {
