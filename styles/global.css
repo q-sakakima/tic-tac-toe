@@ -50,6 +50,9 @@ body {
   font-family: sans-serif;
   margin: 20px;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  background-color: gray;
 }
 
 .game {
