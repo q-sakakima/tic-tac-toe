@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { Mark } from "../../types/index";
-import { Square } from "../square";
+import { Square } from "../Square";
 
 type BoardProps = {
     xIsNext: boolean;

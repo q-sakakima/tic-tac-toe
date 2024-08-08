@@ -1,7 +1,7 @@
 import '../styles/global.css';
 import { FunctionComponent, useState } from "react";
 import { Mark } from "../types/index";
-import { Board } from "../components/board";
+import { Board } from "../components/Board";
 
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
