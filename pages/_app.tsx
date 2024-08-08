@@ -1,15 +1,16 @@
 import '../styles/global.css';
 import { FunctionComponent, useState } from "react";
 
-interface SquareProps {
-  value: string | null;
+type Mark = 'X' | 'O' | null;
+type SquareProps = {
+  value: Mark;
   onSquareClick: () => void;
 }
 
-interface BoardProps {
+type BoardProps = {
   xIsNext: boolean;
-  squares: string[];
-  onPlay: (nextSquares: string[]) => void;
+  squares: Array<Mark>;
+  onPlay: (nextSquares: Array<Mark>) => void;
 }
 
 const Square: FunctionComponent<SquareProps> = ({ value, onSquareClick }: SquareProps) => {
@@ -21,7 +22,7 @@ const Square: FunctionComponent<SquareProps> = ({ value, onSquareClick }: Square
 }
 
 const Board: FunctionComponent<BoardProps> = ({ xIsNext, squares, onPlay }: BoardProps) => {
-  const calculateWinner = (squares: string[]) => {
+  const calculateWinner = (squares: Array<Mark>) => {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -49,7 +50,7 @@ const Board: FunctionComponent<BoardProps> = ({ xIsNext, squares, onPlay }: Boar
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
-    const nextSquares = squares.slice();
+    const nextSquares: Array<Mark> = squares.slice();
     if (xIsNext) {
       nextSquares[i] = "X";
     } else {
@@ -95,7 +96,7 @@ export default function Game() {
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
-  const handlePlay = (nextSquares: string[]) => {
+  const handlePlay = (nextSquares: Array<Mark>) => {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
