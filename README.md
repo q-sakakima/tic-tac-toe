@@ -2,4 +2,9 @@
 [チュートリアル：三目並べ – React](https://ja.react.dev/learn/tutorial-tic-tac-toe)
 
 ## ブランチ名の命名方法
-training/(研修内容を表したタイトル)/(何番目のReact研修か)
+```
+main
+└── feature/{研修名}
+    └── feature/{研修名} ※研修が先へ進む場合
+        └── ...
+```
