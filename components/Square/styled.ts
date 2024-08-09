@@ -13,7 +13,4 @@ export const square = css`
   padding: 0;
   text-align: center;
   width: 50px;
-  &:hover {
-    background: #FFEDCF;
-  }
 `;
