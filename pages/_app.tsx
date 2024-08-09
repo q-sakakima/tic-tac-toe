@@ -1,4 +1,5 @@
 import '../styles/global.css';
+import '../styles/responsive.css';
 import { FunctionComponent, useState } from "react";
 import { Mark } from "../types/index";
 import { Board } from "../components/Board";
