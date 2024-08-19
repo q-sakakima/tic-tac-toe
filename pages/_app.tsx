@@ -39,7 +39,7 @@ export default function Game() {
     setBgColor(!bgColor);
   }
 
-  const bgColorClass = bgColor ? 'bg-color-gray' : '';
+  const bgColorClass = bgColor ? 'dark-theme' : '';
 
   return (
     <div className={`game ${bgColorClass}`}>

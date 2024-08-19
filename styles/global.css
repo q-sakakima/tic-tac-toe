@@ -56,6 +56,7 @@ ul {
   padding: 20px;
 }
 
-.bg-color-gray {
-  background-color: gray;
+.dark-theme {
+  background-color: black;
+  color: white;
 }
