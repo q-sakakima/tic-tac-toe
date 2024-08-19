@@ -11,3 +11,9 @@ export const square = css`
   padding: 0;
   text-align: center;
 `;
+
+export const hoverStyle = css`
+  &:hover {
+    background: #FFEDCF;
+  }
+`
