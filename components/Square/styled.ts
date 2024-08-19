@@ -17,3 +17,7 @@ export const hoverStyle = css`
     background: #FFEDCF;
   }
 `
+
+export const winnersSquareStyle = css`
+  background-color: #8DFA8D;
+`
