@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { css } from '@emotion/react';
 
 export const square = css`
   background: #fff;
@@ -14,10 +14,10 @@ export const square = css`
 
 export const hoverStyle = css`
   &:hover {
-    background: #FFEDCF;
+    background: #ffedcf;
   }
-`
+`;
 
 export const winnersSquareStyle = css`
-  background-color: #8DFA8D;
-`
+  background-color: #8dfa8d;
+`;

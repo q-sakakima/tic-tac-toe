@@ -1,14 +1,12 @@
 /* Mobile */
 @media screen and (max-width: 767px) {
-.game {
+  .game {
     flex-direction: column;
-}
+  }
 }
 /* Tablet */
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
-
 }
 /* PC */
 @media screen and (min-width: 1024px) {
-
 }

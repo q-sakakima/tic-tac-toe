@@ -1,8 +1,8 @@
 import '../styles/global.css';
 import '../styles/responsive.css';
-import { FunctionComponent, useState } from "react";
-import { Mark } from "../types/index";
-import { Board } from "../components/Board";
+import { FunctionComponent, useState } from 'react';
+import { Mark } from '../types/index';
+import { Board } from '../components/Board';
 
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
@@ -15,18 +15,18 @@ export default function Game() {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
-  }
+  };
 
   const jumpTo = (nextMove: number) => {
     setCurrentMove(nextMove);
-  }
+  };
 
   const moves = history.map((squares, move) => {
     let description;
     if (move > 0) {
-      description = "Go to move #" + move;
+      description = 'Go to move #' + move;
     } else {
-      description = "Go to game start";
+      description = 'Go to game start';
     }
     return (
       <li key={move}>
@@ -37,7 +37,7 @@ export default function Game() {
 
   const handleBGColor = () => {
     setBgColor(!bgColor);
-  }
+  };
 
   const bgColorClass = bgColor ? 'dark-theme' : '';
 
