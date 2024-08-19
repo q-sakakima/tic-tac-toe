@@ -4,8 +4,9 @@
 
 body {
   font-family: sans-serif;
-  margin: 20px;
   padding: 0;
+  margin: 0;
+  background-color: white;
 }
 
 h1 {
@@ -46,16 +47,16 @@ ul {
   padding-inline-start: 20px;
 }
 
-body {
-  font-family: sans-serif;
-  margin: 20px;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  background-color: gray;
-}
-
 .game {
   display: flex;
+  justify-content: center;
   flex-direction: row;
+  gap: 20px;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.dark-theme {
+  background-color: black;
+  color: white;
 }
