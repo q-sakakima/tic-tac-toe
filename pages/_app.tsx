@@ -14,10 +14,7 @@ export default function Game() {
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove]?.squares;
 
-  const handlePlay = (
-    nextSquares: Array<Mark>,
-    nextCoordinates: Coordinates,
-  ) => {
+  const handlePlay = (nextSquares: Mark[], nextCoordinates: Coordinates) => {
     const nextHistory = [
       ...history.slice(0, currentMove + 1),
       { squares: nextSquares, nextCoordinates: nextCoordinates },
