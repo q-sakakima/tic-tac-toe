@@ -2,8 +2,7 @@ import '../styles/global.css';
 import '../styles/responsive.css';
 import { FunctionComponent, useState } from 'react';
 import { Mark, Coordinates } from '../types/index';
-import { Board3x3 } from '../components/Board3x3';
-import { Board4x4 } from '../components/Board4x4';
+import { Board } from '../components/Board';
 
 export default function Game() {
   const [history, setHistory] = useState<
@@ -62,19 +61,12 @@ export default function Game() {
   return (
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
-        {is3x3 ? (
-          <Board3x3
-            xIsNext={xIsNext}
-            squares={currentSquares || []}
-            onPlay={handlePlay}
-          />
-        ) : (
-          <Board4x4
-            xIsNext={xIsNext}
-            squares={currentSquares || []}
-            onPlay={handlePlay}
-          />
-        )}
+        <Board
+          xIsNext={xIsNext}
+          squares={currentSquares || []}
+          is3x3={is3x3}
+          onPlay={handlePlay}
+        />
       </div>
       <div className="game-info">
         <ol>{moves}</ol>
