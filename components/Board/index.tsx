@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { Mark } from '../../types/index';
+import { Mark, Coordinates } from '../../types/index';
 import { Square } from '../Square';
 import { css, ClassNames } from '@emotion/react';
 import { status, boardRow } from './styled';
@@ -7,7 +7,7 @@ import { status, boardRow } from './styled';
 type BoardProps = {
   xIsNext: boolean;
   squares: Mark[];
-  onPlay: (nextSquares: Mark[]) => void;
+  onPlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
 };
 
 export const Board: FunctionComponent<BoardProps> = ({
@@ -16,6 +16,17 @@ export const Board: FunctionComponent<BoardProps> = ({
   onPlay,
 }: BoardProps) => {
   const winnersSquares: boolean[] = Array(9).fill(false);
+  const coordinates: Coordinates[] = [
+    { x: 1, y: 1 },
+    { x: 2, y: 1 },
+    { x: 3, y: 1 },
+    { x: 1, y: 2 },
+    { x: 2, y: 2 },
+    { x: 3, y: 2 },
+    { x: 1, y: 3 },
+    { x: 2, y: 3 },
+    { x: 3, y: 3 },
+  ];
 
   const calculateWinner = (squares: Mark[]) => {
     const lines = [
@@ -53,7 +64,7 @@ export const Board: FunctionComponent<BoardProps> = ({
     } else {
       nextSquares[i] = 'O';
     }
-    onPlay(nextSquares);
+    onPlay(nextSquares, coordinates[i]);
   };
 
   const winner = calculateWinner(squares);

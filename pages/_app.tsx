@@ -1,18 +1,26 @@
 import '../styles/global.css';
 import '../styles/responsive.css';
 import { FunctionComponent, useState } from 'react';
-import { Mark } from '../types/index';
+import { Mark, Coordinates } from '../types/index';
 import { Board } from '../components/Board';
 
 export default function Game() {
-  const [history, setHistory] = useState([Array(9).fill(null)]);
-  const [currentMove, setCurrentMove] = useState(0);
-  const [bgColor, setBgColor] = useState(false);
+  const [history, setHistory] = useState<
+    { squares: Mark[]; nextCoordinates: Coordinates }[]
+  >([{ squares: Array(9).fill(null), nextCoordinates: null }]);
+  const [currentMove, setCurrentMove] = useState<number>(0);
+  const [bgColor, setBgColor] = useState<boolean>(false);
   const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
+  const currentSquares = history[currentMove].squares;
 
-  const handlePlay = (nextSquares: Array<Mark>) => {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+  const handlePlay = (
+    nextSquares: Array<Mark>,
+    nextCoordinates: Coordinates,
+  ) => {
+    const nextHistory = [
+      ...history.slice(0, currentMove + 1),
+      { squares: nextSquares, nextCoordinates: nextCoordinates },
+    ];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   };
@@ -21,10 +29,10 @@ export default function Game() {
     setCurrentMove(nextMove);
   };
 
-  const moves = history.map((squares, move) => {
+  const moves = history.map((history, move) => {
     let description;
     if (move > 0) {
-      description = 'Go to move #' + move;
+      description = `Go to move #${move} (${history.nextCoordinates?.x}, ${history.nextCoordinates?.y})`;
     } else {
       description = 'Go to game start';
     }
