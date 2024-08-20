@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
 
-export const boardRow = css`
+export const boardRow4x4 = css`
   display: grid;
-  grid-template-columns: repeat(3, 50px);
-  grid-template-rows: repeat(3, 50px);
+  grid-template-columns: repeat(4, 50px);
+  grid-template-rows: repeat(4, 50px);
   &:after {
     clear: both;
     content: '';

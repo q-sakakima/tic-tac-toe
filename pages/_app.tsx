@@ -2,7 +2,8 @@ import '../styles/global.css';
 import '../styles/responsive.css';
 import { FunctionComponent, useState } from 'react';
 import { Mark, Coordinates } from '../types/index';
-import { Board } from '../components/Board';
+import { Board3x3 } from '../components/Board3x3';
+import { Board4x4 } from '../components/Board4x4';
 
 export default function Game() {
   const [history, setHistory] = useState<
@@ -10,8 +11,9 @@ export default function Game() {
   >([{ squares: Array(9).fill(null), nextCoordinates: null }]);
   const [currentMove, setCurrentMove] = useState<number>(0);
   const [bgColor, setBgColor] = useState<boolean>(false);
+  const [is3x3, setIs3x3] = useState<boolean>(true);
   const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove].squares;
+  const currentSquares = history[currentMove]?.squares;
 
   const handlePlay = (
     nextSquares: Array<Mark>,
@@ -49,16 +51,39 @@ export default function Game() {
 
   const bgColorClass = bgColor ? 'dark-theme' : '';
 
+  const handleBoardSize = () => {
+    setIs3x3(!is3x3);
+    setHistory([
+      { squares: Array(is3x3 ? 9 : 16).fill(null), nextCoordinates: null },
+    ]);
+    setCurrentMove(0);
+  };
+
   return (
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        {is3x3 ? (
+          <Board3x3
+            xIsNext={xIsNext}
+            squares={currentSquares || []}
+            onPlay={handlePlay}
+          />
+        ) : (
+          <Board4x4
+            xIsNext={xIsNext}
+            squares={currentSquares || []}
+            onPlay={handlePlay}
+          />
+        )}
       </div>
       <div className="game-info">
         <ol>{moves}</ol>
       </div>
-      <div>
+      <div className="bottom-column">
         <button onClick={() => handleBGColor()}>Change BGColor</button>
+        <button onClick={() => handleBoardSize()}>
+          {is3x3 ? 'Change 4x4' : 'Change 3x3'}
+        </button>
       </div>
     </div>
   );

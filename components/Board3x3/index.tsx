@@ -1,16 +1,10 @@
 import { FunctionComponent } from 'react';
-import { Mark, Coordinates } from '../../types/index';
+import { Mark, Coordinates, BoardProps } from '../../types/index';
 import { Square } from '../Square';
 import { css, ClassNames } from '@emotion/react';
-import { status, boardRow } from './styled';
+import { status, boardRow3x3 } from './styled';
 
-type BoardProps = {
-  xIsNext: boolean;
-  squares: Mark[];
-  onPlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
-};
-
-export const Board: FunctionComponent<BoardProps> = ({
+export const Board3x3: FunctionComponent<BoardProps> = ({
   xIsNext,
   squares,
   onPlay,
@@ -80,7 +74,7 @@ export const Board: FunctionComponent<BoardProps> = ({
       {({ css }) => (
         <>
           <div className={css(status)}>{status}</div>
-          <div className={css(boardRow)}>
+          <div className={css(boardRow3x3)}>
             <Square
               value={squares[0]}
               winnersSquare={winnersSquares[0]}
