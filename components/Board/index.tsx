@@ -135,6 +135,8 @@ export const Board: FunctionComponent<BoardProps> = ({
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
 
+  let numberOfSquares: number = is3x3 ? 9 : 16;
+
   return (
     <ClassNames>
       {({ css }) => (
@@ -146,90 +148,16 @@ export const Board: FunctionComponent<BoardProps> = ({
               ${is3x3 ? boardRow3x3 : boardRow4x4};
             `}
           >
-            <Square
-              value={squares[0]}
-              winnersSquare={winnersSquares[0]}
-              onSquareClick={() => handleClick(0)}
-            />
-            <Square
-              value={squares[1]}
-              winnersSquare={winnersSquares[1]}
-              onSquareClick={() => handleClick(1)}
-            />
-            <Square
-              value={squares[2]}
-              winnersSquare={winnersSquares[2]}
-              onSquareClick={() => handleClick(2)}
-            />
-            <Square
-              value={squares[3]}
-              winnersSquare={winnersSquares[3]}
-              onSquareClick={() => handleClick(3)}
-            />
-            <Square
-              value={squares[4]}
-              winnersSquare={winnersSquares[4]}
-              onSquareClick={() => handleClick(4)}
-            />
-            <Square
-              value={squares[5]}
-              winnersSquare={winnersSquares[5]}
-              onSquareClick={() => handleClick(5)}
-            />
-            <Square
-              value={squares[6]}
-              winnersSquare={winnersSquares[6]}
-              onSquareClick={() => handleClick(6)}
-            />
-            <Square
-              value={squares[7]}
-              winnersSquare={winnersSquares[7]}
-              onSquareClick={() => handleClick(7)}
-            />
-            <Square
-              value={squares[8]}
-              winnersSquare={winnersSquares[8]}
-              onSquareClick={() => handleClick(8)}
-            />
-            {!is3x3 && (
-              <>
+            {[...Array(numberOfSquares)].map((_, i) => {
+              return (
                 <Square
-                  value={squares[9]}
-                  winnersSquare={winnersSquares[9]}
-                  onSquareClick={() => handleClick(9)}
+                  key={i}
+                  value={squares[i]}
+                  winnersSquare={winnersSquares[i]}
+                  onSquareClick={() => handleClick(i)}
                 />
-                <Square
-                  value={squares[10]}
-                  winnersSquare={winnersSquares[10]}
-                  onSquareClick={() => handleClick(10)}
-                />
-                <Square
-                  value={squares[11]}
-                  winnersSquare={winnersSquares[11]}
-                  onSquareClick={() => handleClick(11)}
-                />
-                <Square
-                  value={squares[12]}
-                  winnersSquare={winnersSquares[12]}
-                  onSquareClick={() => handleClick(12)}
-                />
-                <Square
-                  value={squares[13]}
-                  winnersSquare={winnersSquares[13]}
-                  onSquareClick={() => handleClick(13)}
-                />
-                <Square
-                  value={squares[14]}
-                  winnersSquare={winnersSquares[14]}
-                  onSquareClick={() => handleClick(14)}
-                />
-                <Square
-                  value={squares[15]}
-                  winnersSquare={winnersSquares[15]}
-                  onSquareClick={() => handleClick(15)}
-                />
-              </>
-            )}
+              );
+            })}
           </div>
         </>
       )}
