@@ -191,7 +191,7 @@ export const Board: FunctionComponent<BoardProps> = ({
               winnersSquare={winnersSquares[8]}
               onSquareClick={() => handleClick(8)}
             />
-            {!is3x3 ? (
+            {!is3x3 && (
               <>
                 <Square
                   value={squares[9]}
@@ -229,7 +229,7 @@ export const Board: FunctionComponent<BoardProps> = ({
                   onSquareClick={() => handleClick(15)}
                 />
               </>
-            ) : null}
+            )}
           </div>
         </>
       )}
