@@ -124,7 +124,7 @@ export const Board: FunctionComponent<BoardProps> = ({
     } else {
       nextSquares[i] = 'O';
     }
-    onPlay(nextSquares, coordinates[i]);
+    handlePlay(nextSquares, coordinates[i]);
   };
 
   const winner = calculateWinner(squares);
