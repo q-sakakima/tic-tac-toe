@@ -62,7 +62,7 @@ export default function Game() {
           xIsNext={xIsNext}
           squares={currentSquares || []}
           is3x3={is3x3}
-          onPlay={handlePlay}
+          handlePlay={handlePlay}
         />
       </div>
       <div className="game-info">

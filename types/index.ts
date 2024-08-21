@@ -6,5 +6,5 @@ export type BoardProps = {
   xIsNext: boolean;
   squares: Mark[];
   is3x3: boolean;
-  onPlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
+  handlePlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
 };

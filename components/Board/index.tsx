@@ -8,7 +8,7 @@ export const Board: FunctionComponent<BoardProps> = ({
   xIsNext,
   squares,
   is3x3,
-  onPlay,
+  handlePlay,
 }: BoardProps) => {
   let winnersSquares: boolean[];
   let coordinates: Coordinates[];
