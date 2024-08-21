@@ -11,45 +11,15 @@ export const Board: FunctionComponent<BoardProps> = ({
   handlePlay,
 }: BoardProps) => {
   let winnersSquares: boolean[];
-  let coordinates: Coordinates[];
+  let coordinates: Coordinates[] = [];
+  let gridSize: number = is3x3 ? 3 ** 2 : 4 ** 2;
 
-  if (is3x3) {
-    winnersSquares = Array(9).fill(false);
-  } else if (!is3x3) {
-    winnersSquares = Array(16).fill(false);
-  }
+  winnersSquares = Array(gridSize).fill(false);
 
-  if (is3x3) {
-    coordinates = [
-      { x: 1, y: 1 },
-      { x: 2, y: 1 },
-      { x: 3, y: 1 },
-      { x: 1, y: 2 },
-      { x: 2, y: 2 },
-      { x: 3, y: 2 },
-      { x: 1, y: 3 },
-      { x: 2, y: 3 },
-      { x: 3, y: 3 },
-    ];
-  } else if (!is3x3) {
-    coordinates = [
-      { x: 1, y: 1 },
-      { x: 2, y: 1 },
-      { x: 3, y: 1 },
-      { x: 4, y: 1 },
-      { x: 1, y: 2 },
-      { x: 2, y: 2 },
-      { x: 3, y: 2 },
-      { x: 4, y: 2 },
-      { x: 1, y: 3 },
-      { x: 2, y: 3 },
-      { x: 3, y: 3 },
-      { x: 4, y: 3 },
-      { x: 1, y: 4 },
-      { x: 2, y: 4 },
-      { x: 3, y: 4 },
-      { x: 4, y: 4 },
-    ];
+  for (let i = 1; i <= gridSize; i++) {
+    for (let j = 1; j <= gridSize; j++) {
+      coordinates.push({ x: j, y: i });
+    }
   }
 
   const calculateWinner = (squares: Mark[]) => {
@@ -135,8 +105,6 @@ export const Board: FunctionComponent<BoardProps> = ({
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
 
-  let numberOfSquares: number = is3x3 ? 9 : 16;
-
   return (
     <ClassNames>
       {({ css }) => (
@@ -148,7 +116,7 @@ export const Board: FunctionComponent<BoardProps> = ({
               ${is3x3 ? boardRow3x3 : boardRow4x4};
             `}
           >
-            {[...Array(numberOfSquares)].map((_, i) => {
+            {[...Array(gridSize)].map((_, i) => {
               return (
                 <Square
                   key={i}
