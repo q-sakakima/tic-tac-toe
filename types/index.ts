@@ -7,5 +7,6 @@ export type BoardProps = {
   squares: Mark[];
   lines: number[][];
   boardSize: number;
+  isDraw: boolean;
   handlePlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
 };
