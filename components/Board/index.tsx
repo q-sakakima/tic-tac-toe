@@ -1,8 +1,17 @@
 import { FunctionComponent } from 'react';
-import { Mark, Coordinates, BoardProps } from '../../types/index';
+import { Mark, Coordinates } from '../../types/index';
 import { Square } from '../Square';
 import { css, ClassNames } from '@emotion/react';
 import { status, boardRow, boardRow3x3, boardRow4x4 } from './styled';
+
+export type BoardProps = {
+  xIsNext: boolean;
+  squares: Mark[];
+  lines: number[][];
+  boardSize: number;
+  isDraw: boolean;
+  handlePlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
+};
 
 export const Board: FunctionComponent<BoardProps> = ({
   xIsNext,
