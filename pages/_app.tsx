@@ -61,7 +61,7 @@ export default function Game() {
     if (!checkDraw.includes(false)) {
       setIsDraw(true);
     }
-    // NOTE: Print Debug
+    //! NOTE: Print Debug
     console.log(isDraw);
   }, [currentSquares, lines]);
 
