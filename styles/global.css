@@ -47,6 +47,10 @@ ul {
   padding-inline-start: 20px;
 }
 
+ol {
+  margin: 0;
+}
+
 .game {
   display: flex;
   justify-content: center;
@@ -54,6 +58,12 @@ ul {
   gap: 20px;
   min-height: 100vh;
   padding: 20px;
+}
+
+.bottom-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .dark-theme {

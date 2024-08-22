@@ -1,6 +1,6 @@
 import '../styles/global.css';
 import '../styles/responsive.css';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useState, useEffect } from 'react';
 import { Mark, Coordinates } from '../types/index';
 import { Board } from '../components/Board';
 
@@ -10,13 +10,39 @@ export default function Game() {
   >([{ squares: Array(9).fill(null), nextCoordinates: null }]);
   const [currentMove, setCurrentMove] = useState<number>(0);
   const [bgColor, setBgColor] = useState<boolean>(false);
+  const [boardSize, setBoardSize] = useState<number>(3);
   const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove].squares;
+  const currentSquares = history[currentMove]?.squares;
 
-  const handlePlay = (
-    nextSquares: Array<Mark>,
-    nextCoordinates: Coordinates,
-  ) => {
+  let lines: number[][] = [];
+
+  if (boardSize === 3) {
+    lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+  } else if (boardSize === 4) {
+    lines = [
+      [0, 1, 2, 3],
+      [4, 5, 6, 7],
+      [8, 9, 10, 11],
+      [12, 13, 14, 15],
+      [0, 4, 8, 12],
+      [1, 5, 9, 13],
+      [2, 6, 10, 14],
+      [3, 7, 11, 15],
+      [0, 5, 10, 15],
+      [3, 6, 9, 12],
+    ];
+  }
+
+  const handlePlay = (nextSquares: Mark[], nextCoordinates: Coordinates) => {
     const nextHistory = [
       ...history.slice(0, currentMove + 1),
       { squares: nextSquares, nextCoordinates: nextCoordinates },
@@ -49,16 +75,40 @@ export default function Game() {
 
   const bgColorClass = bgColor ? 'dark-theme' : '';
 
+  const handleBoardSize = () => {
+    if (boardSize === 3) {
+      setBoardSize(4);
+    } else if (boardSize === 4) {
+      setBoardSize(3);
+    }
+    setHistory([
+      {
+        squares: Array(boardSize === 3 ? 3 ** 2 : 4 ** 2).fill(null),
+        nextCoordinates: null,
+      },
+    ]);
+    setCurrentMove(0);
+  };
+
   return (
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board
+          xIsNext={xIsNext}
+          squares={currentSquares || []}
+          lines={lines}
+          boardSize={boardSize}
+          handlePlay={handlePlay}
+        />
       </div>
       <div className="game-info">
         <ol>{moves}</ol>
       </div>
-      <div>
+      <div className="bottom-column">
         <button onClick={() => handleBGColor()}>Change BGColor</button>
+        <button onClick={() => handleBoardSize()}>
+          {boardSize === 3 ? 'Change 4x4' : 'Change 3x3'}
+        </button>
       </div>
     </div>
   );
