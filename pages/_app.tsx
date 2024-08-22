@@ -15,6 +15,7 @@ export default function Game() {
   const currentSquares = history[currentMove]?.squares;
 
   let lines: number[][] = [];
+  const [isDraw, setIsDraw] = useState<boolean>(false);
 
   if (boardSize === 3) {
     lines = [
@@ -42,6 +43,26 @@ export default function Game() {
     ];
   }
 
+  useEffect(() => {
+    const checkDraw = lines.map((line) => {
+      const [a, b, c, d] = line;
+
+      const squareA = currentSquares[a];
+      const squareB = currentSquares[b];
+      const squareC = currentSquares[c];
+      const squareD = d === undefined ? null : currentSquares[d];
+
+      const containX = [squareA, squareB, squareC, squareD].includes('X');
+      const containO = [squareA, squareB, squareC, squareD].includes('O');
+
+      return containX && containO;
+    });
+
+    if (!checkDraw.includes(false)) {
+      setIsDraw(true);
+    }
+  }, [currentSquares, lines]);
+
   const handlePlay = (nextSquares: Mark[], nextCoordinates: Coordinates) => {
     const nextHistory = [
       ...history.slice(0, currentMove + 1),
@@ -52,6 +73,7 @@ export default function Game() {
   };
 
   const jumpTo = (nextMove: number) => {
+    setIsDraw(false);
     setCurrentMove(nextMove);
   };
 
@@ -98,6 +120,7 @@ export default function Game() {
           squares={currentSquares || []}
           lines={lines}
           boardSize={boardSize}
+          isDraw={isDraw}
           handlePlay={handlePlay}
         />
       </div>
