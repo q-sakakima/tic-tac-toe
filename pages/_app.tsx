@@ -73,6 +73,7 @@ export default function Game() {
   };
 
   const jumpTo = (nextMove: number) => {
+    setIsDraw(false);
     setCurrentMove(nextMove);
   };
 
