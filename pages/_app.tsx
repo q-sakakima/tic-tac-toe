@@ -16,6 +16,7 @@ export default function Game() {
 
   let lines: number[][] = [];
   const [isDraw, setIsDraw] = useState<boolean>(false);
+  const [timeLeft, setTimeLeft] = useState<number>(10);
 
   if (boardSize === 3) {
     lines = [
@@ -63,6 +64,19 @@ export default function Game() {
     }
   }, [currentSquares, lines]);
 
+  // TODO: 条件文にtimeLeft > 0 && !isWin && !isDrawを使えるように変更
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+
+    if (isDraw) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [timeLeft]);
+
   const handlePlay = (nextSquares: Mark[], nextCoordinates: Coordinates) => {
     const nextHistory = [
       ...history.slice(0, currentMove + 1),
@@ -70,11 +84,13 @@ export default function Game() {
     ];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
+    setTimeLeft(10);
   };
 
   const jumpTo = (nextMove: number) => {
     setIsDraw(false);
     setCurrentMove(nextMove);
+    setTimeLeft(10);
   };
 
   const moves = history.map((history, move) => {
@@ -110,6 +126,7 @@ export default function Game() {
       },
     ]);
     setCurrentMove(0);
+    setTimeLeft(10);
   };
 
   return (
@@ -121,10 +138,12 @@ export default function Game() {
           lines={lines}
           boardSize={boardSize}
           isDraw={isDraw}
+          timeLeft={timeLeft}
           handlePlay={handlePlay}
         />
       </div>
       <div className="game-info">
+        {timeLeft > 0 ? timeLeft : 'Time is up.'}
         <ol>{moves}</ol>
       </div>
       <div className="bottom-column">

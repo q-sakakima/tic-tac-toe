@@ -10,6 +10,7 @@ export type BoardProps = {
   lines: number[][];
   boardSize: number;
   isDraw: boolean;
+  timeLeft: number;
   handlePlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
 };
 
@@ -19,6 +20,7 @@ export const Board: FunctionComponent<BoardProps> = ({
   lines,
   boardSize,
   isDraw,
+  timeLeft,
   handlePlay,
 }: BoardProps) => {
   let winnersSquares: boolean[] = Array(boardSize ** 2).fill(false);
@@ -44,7 +46,7 @@ export const Board: FunctionComponent<BoardProps> = ({
   };
 
   const handleClick = (i: number) => {
-    if (calculateWinner(squares) || isDraw || squares[i]) {
+    if (calculateWinner(squares) || isDraw || squares[i] || !timeLeft) {
       return;
     }
     const nextSquares: Mark[] = squares.slice();
@@ -62,6 +64,8 @@ export const Board: FunctionComponent<BoardProps> = ({
     status = 'Winner: ' + winner;
   } else if (isDraw) {
     status = 'Draw';
+  } else if (!timeLeft) {
+    status = 'YOU LOSE';
   } else {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
