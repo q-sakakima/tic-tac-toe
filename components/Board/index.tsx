@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from 'react';
+import { FunctionComponent, useContext, useMemo } from 'react';
 import { ResultCheckContext } from '../../contexts/ResultCheckProvider';
 import { Mark, Coordinates } from '../../types/index';
 import { Square } from '../Square';
@@ -6,7 +6,6 @@ import { css, ClassNames } from '@emotion/react';
 import { status, boardRow, boardRow3x3, boardRow4x4 } from './styled';
 
 export type BoardProps = {
-  xIsNext: boolean;
   squares: Mark[];
   lines: number[][];
   boardSize: number;
@@ -15,14 +14,14 @@ export type BoardProps = {
 };
 
 export const Board: FunctionComponent<BoardProps> = ({
-  xIsNext,
   squares,
   lines,
   boardSize,
   timeLeft,
   handlePlay,
 }: BoardProps) => {
-  const { isWin, setIsWin, isDraw, setIsDraw } = useContext(ResultCheckContext);
+  const { isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext } =
+    useContext(ResultCheckContext);
   let winnersSquares: boolean[] = Array(boardSize ** 2).fill(false);
   let coordinates: Coordinates[] = [];
 
@@ -47,7 +46,7 @@ export const Board: FunctionComponent<BoardProps> = ({
   };
 
   const handleClick = (i: number) => {
-    if (calculateWinner(squares) || isDraw || squares[i] || !timeLeft) {
+    if (isWin !== null || isDraw || squares[i] || !timeLeft) {
       return;
     }
     const nextSquares: Mark[] = squares.slice();
@@ -65,8 +64,8 @@ export const Board: FunctionComponent<BoardProps> = ({
     status = 'Winner: ' + winner;
   } else if (isDraw) {
     status = 'Draw';
-  } else if (!isWin && !timeLeft) {
-    status = 'YOU LOSE';
+  } else if (isWin === false) {
+    status = 'YOU LOSE: ' + (xIsNext ? 'X' : 'O');
   } else {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
@@ -75,10 +74,7 @@ export const Board: FunctionComponent<BoardProps> = ({
     <ClassNames>
       {({ css }) => (
         <>
-          <div className={css(status)}>
-            {status}
-            {!timeLeft && !isWin && !isDraw ? (xIsNext ? ': X' : ': O') : null}
-          </div>
+          <div className={css(status)}>{status}</div>
           <div
             className={css`
               ${boardRow};
