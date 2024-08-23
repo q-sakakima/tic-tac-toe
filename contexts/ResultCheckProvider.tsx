@@ -16,7 +16,7 @@ type ProviderProps = {
 export const ResultCheckContext = createContext<ResultCheckContextType>({
   isWin: null,
   setIsWin: () => {},
-  isDraw: false,
+  isDraw: null,
   setIsDraw: () => {},
   xIsNext: true,
   setXIsNext: () => {},
