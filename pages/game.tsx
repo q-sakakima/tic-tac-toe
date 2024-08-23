@@ -1,7 +1,7 @@
 import { FunctionComponent, useState, useEffect, useContext } from 'react';
-import { ResultCheckContext } from '../../contexts/ResultCheckProvider';
-import { Mark, Coordinates } from '../../types/index';
-import { Board } from '../../components/Board';
+import { ResultCheckContext } from '../contexts/ResultCheckProvider';
+import { Mark, Coordinates } from '../types/index';
+import { Board } from '../components/Board';
 
 export const Game: FunctionComponent = () => {
   const [history, setHistory] = useState<
@@ -10,11 +10,11 @@ export const Game: FunctionComponent = () => {
   const [currentMove, setCurrentMove] = useState<number>(0);
   const [bgColor, setBgColor] = useState<boolean>(false);
   const [boardSize, setBoardSize] = useState<number>(3);
-  const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove]?.squares;
 
   let lines: number[][] = [];
-  const { isWin, setIsWin, isDraw, setIsDraw } = useContext(ResultCheckContext);
+  const { isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext } =
+    useContext(ResultCheckContext);
   const [timeLeft, setTimeLeft] = useState<number>(10);
 
   if (boardSize === 3) {
@@ -63,13 +63,18 @@ export const Game: FunctionComponent = () => {
     }
   }, [currentSquares, lines]);
 
-  // TODO: 条件文にtimeLeft > 0 && !isWin && !isDrawを使えるように変更
+  useEffect(() => {
+    setXIsNext(currentMove % 2 === 0);
+  }, [currentMove]);
+
   useEffect(() => {
     if (isDraw || isWin) {
       return;
     } else if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
+    } else {
+      setIsWin(false);
     }
   }, [timeLeft]);
 
@@ -133,7 +138,6 @@ export const Game: FunctionComponent = () => {
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
         <Board
-          xIsNext={xIsNext}
           squares={currentSquares || []}
           lines={lines}
           boardSize={boardSize}
@@ -142,7 +146,7 @@ export const Game: FunctionComponent = () => {
         />
       </div>
       <div className="game-info">
-        {!isWin && !isDraw && (timeLeft > 0 ? timeLeft : 'Time is up.')}
+        {isWin === null && !isDraw && timeLeft && `${timeLeft} seconds left.`}
         <ol>{moves}</ol>
       </div>
       <div className="bottom-column">
