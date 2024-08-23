@@ -1,4 +1,5 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useContext } from 'react';
+import { ResultCheckContext } from '../../contexts/ResultCheckProvider';
 import { Mark, Coordinates } from '../../types/index';
 import { Square } from '../Square';
 import { css, ClassNames } from '@emotion/react';
@@ -9,7 +10,6 @@ export type BoardProps = {
   squares: Mark[];
   lines: number[][];
   boardSize: number;
-  isDraw: boolean;
   timeLeft: number;
   handlePlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
 };
@@ -19,10 +19,10 @@ export const Board: FunctionComponent<BoardProps> = ({
   squares,
   lines,
   boardSize,
-  isDraw,
   timeLeft,
   handlePlay,
 }: BoardProps) => {
+  const { isWin, setIsWin, isDraw, setIsDraw } = useContext(ResultCheckContext);
   let winnersSquares: boolean[] = Array(boardSize ** 2).fill(false);
   let coordinates: Coordinates[] = [];
 
@@ -38,6 +38,7 @@ export const Board: FunctionComponent<BoardProps> = ({
       if (line.every((v) => squares[v] && squares[v] === squares[line[0]])) {
         line.forEach((v) => {
           winnersSquares[v] = true;
+          setIsWin(true);
         });
         return squares[line[0]];
       }
@@ -64,7 +65,7 @@ export const Board: FunctionComponent<BoardProps> = ({
     status = 'Winner: ' + winner;
   } else if (isDraw) {
     status = 'Draw';
-  } else if (!timeLeft) {
+  } else if (!isWin && !timeLeft) {
     status = 'YOU LOSE';
   } else {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
@@ -76,7 +77,7 @@ export const Board: FunctionComponent<BoardProps> = ({
         <>
           <div className={css(status)}>
             {status}
-            {!timeLeft && !winner && !isDraw ? (xIsNext ? ': X' : ': O') : null}
+            {!timeLeft && !isWin && !isDraw ? (xIsNext ? ': X' : ': O') : null}
           </div>
           <div
             className={css`

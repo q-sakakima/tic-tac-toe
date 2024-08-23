@@ -1,8 +1,9 @@
-import { FunctionComponent, useState, useEffect } from 'react';
+import { FunctionComponent, useState, useEffect, useContext } from 'react';
+import { ResultCheckContext } from '../../contexts/ResultCheckProvider';
 import { Mark, Coordinates } from '../../types/index';
 import { Board } from '../../components/Board';
 
-export function Game() {
+export const Game: FunctionComponent = () => {
   const [history, setHistory] = useState<
     { squares: Mark[]; nextCoordinates: Coordinates }[]
   >([{ squares: Array(9).fill(null), nextCoordinates: null }]);
@@ -13,7 +14,7 @@ export function Game() {
   const currentSquares = history[currentMove]?.squares;
 
   let lines: number[][] = [];
-  const [isDraw, setIsDraw] = useState<boolean>(false);
+  const { isWin, setIsWin, isDraw, setIsDraw } = useContext(ResultCheckContext);
   const [timeLeft, setTimeLeft] = useState<number>(10);
 
   if (boardSize === 3) {
@@ -64,12 +65,9 @@ export function Game() {
 
   // TODO: 条件文にtimeLeft > 0 && !isWin && !isDrawを使えるように変更
   useEffect(() => {
-    if (timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-
-    if (isDraw) {
+    if (isDraw || isWin) {
+      return;
+    } else if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
     }
@@ -85,10 +83,13 @@ export function Game() {
     setTimeLeft(10);
   };
 
-  const jumpTo = (nextMove: number) => {
-    setIsDraw(false);
+  const jumpTo = (nextMove: number, description: string) => {
     setCurrentMove(nextMove);
-    setTimeLeft(10);
+    if (description === 'Go to game start') {
+      setIsWin(null);
+      setIsDraw(null);
+      setTimeLeft(10);
+    }
   };
 
   const moves = history.map((history, move) => {
@@ -100,7 +101,7 @@ export function Game() {
     }
     return (
       <li key={move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
+        <button onClick={() => jumpTo(move, description)}>{description}</button>
       </li>
     );
   });
@@ -135,13 +136,12 @@ export function Game() {
           squares={currentSquares || []}
           lines={lines}
           boardSize={boardSize}
-          isDraw={isDraw}
           timeLeft={timeLeft}
           handlePlay={handlePlay}
         />
       </div>
       <div className="game-info">
-        {timeLeft > 0 ? timeLeft : 'Time is up.'}
+        {!isWin && !isDraw && (timeLeft > 0 ? timeLeft : 'Time is up.')}
         <ol>{moves}</ol>
       </div>
       <div className="bottom-column">
@@ -152,4 +152,4 @@ export function Game() {
       </div>
     </div>
   );
-}
+};
