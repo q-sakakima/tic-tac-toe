@@ -74,7 +74,10 @@ export const Board: FunctionComponent<BoardProps> = ({
     <ClassNames>
       {({ css }) => (
         <>
-          <div className={css(status)}>{status}</div>
+          <div className={css(status)}>
+            {status}
+            {!timeLeft && !winner && !isDraw ? (xIsNext ? ': X' : ': O') : null}
+          </div>
           <div
             className={css`
               ${boardRow};
