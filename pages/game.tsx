@@ -134,6 +134,10 @@ export const Game: FunctionComponent = () => {
     setTimeLeft(10);
   };
 
+  const handleSurrenderButton = () => {
+    setIsWin(false);
+  };
+
   return (
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
@@ -150,6 +154,7 @@ export const Game: FunctionComponent = () => {
         <ol>{moves}</ol>
       </div>
       <div className="bottom-column">
+        <button onClick={() => handleSurrenderButton()}>Surrender</button>
         <button onClick={() => handleBGColor()}>Change BGColor</button>
         <button onClick={() => handleBoardSize()}>
           {boardSize === 3 ? 'Change 4x4' : 'Change 3x3'}
