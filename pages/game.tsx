@@ -5,8 +5,8 @@ import { Board } from '../components/Board';
 
 export default function Game() {
   const [history, setHistory] = useState<
-    { squares: Mark[]; nextCoordinates: Coordinates }[]
-  >([{ squares: Array(9).fill(null), nextCoordinates: null }]);
+    { squares: Mark[]; coordinates: Coordinates }[]
+  >([{ squares: Array(9).fill(null), coordinates: null }]);
   const [currentMove, setCurrentMove] = useState<number>(0);
   const [bgColor, setBgColor] = useState<boolean>(false);
   const [boardSize, setBoardSize] = useState<number>(3);
@@ -81,7 +81,7 @@ export default function Game() {
   const handlePlay = (nextSquares: Mark[], nextCoordinates: Coordinates) => {
     const nextHistory = [
       ...history.slice(0, currentMove + 1),
-      { squares: nextSquares, nextCoordinates: nextCoordinates },
+      { squares: nextSquares, coordinates: nextCoordinates },
     ];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
@@ -105,7 +105,7 @@ export default function Game() {
   const moves = history.map((history, move) => {
     let description: string;
     if (move > 0) {
-      description = `Go to move #${move} (${history.nextCoordinates?.x}, ${history.nextCoordinates?.y})`;
+      description = `Go to move #${move} (${history.coordinates?.x}, ${history.coordinates?.y})`;
     } else {
       description = 'Go to game start';
     }
@@ -131,7 +131,7 @@ export default function Game() {
     setHistory([
       {
         squares: Array(boardSize === 3 ? 3 ** 2 : 4 ** 2).fill(null),
-        nextCoordinates: null,
+        coordinates: null,
       },
     ]);
     setCurrentMove(0);
