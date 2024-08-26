@@ -76,7 +76,7 @@ export default function Game() {
   }, [currentMove]);
 
   useEffect(() => {
-    if (isDraw || isWin) {
+    if (isDraw || isWin !== null) {
       return;
     } else if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
