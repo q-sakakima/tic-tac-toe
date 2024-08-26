@@ -95,6 +95,10 @@ export const Game: FunctionComponent = () => {
       setIsDraw(null);
       setTimeLeft(10);
       setHistory([history[0]]);
+    } else if (nextMove === history.length - 1) {
+      setIsWin(false);
+    } else {
+      setIsWin(null);
     }
   };
 
@@ -150,7 +154,7 @@ export const Game: FunctionComponent = () => {
         />
       </div>
       <div className="game-info">
-        {isWin === null && !isDraw && timeLeft && `${timeLeft} seconds left.`}
+        {timeLeft ? `${timeLeft} seconds left.` : 'Time is Up.'}
         <ol>{moves}</ol>
       </div>
       <div className="bottom-column">
