@@ -1,28 +1,27 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useContext, useMemo } from 'react';
+import { ResultCheckContext } from '../../contexts/ResultCheckProvider';
 import { Mark, Coordinates } from '../../types/index';
 import { Square } from '../Square';
 import { css, ClassNames } from '@emotion/react';
 import { status, boardRow, boardRow3x3, boardRow4x4 } from './styled';
 
 export type BoardProps = {
-  xIsNext: boolean;
   squares: Mark[];
   lines: number[][];
   boardSize: number;
-  isDraw: boolean;
   timeLeft: number;
   handlePlay: (nextSquares: Mark[], coordinates: Coordinates) => void;
 };
 
 export const Board: FunctionComponent<BoardProps> = ({
-  xIsNext,
   squares,
   lines,
   boardSize,
-  isDraw,
   timeLeft,
   handlePlay,
 }: BoardProps) => {
+  const { isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext } =
+    useContext(ResultCheckContext);
   let winnersSquares: boolean[] = Array(boardSize ** 2).fill(false);
   let coordinates: Coordinates[] = [];
 
@@ -38,6 +37,7 @@ export const Board: FunctionComponent<BoardProps> = ({
       if (line.every((v) => squares[v] && squares[v] === squares[line[0]])) {
         line.forEach((v) => {
           winnersSquares[v] = true;
+          setIsWin(true);
         });
         return squares[line[0]];
       }
@@ -46,7 +46,7 @@ export const Board: FunctionComponent<BoardProps> = ({
   };
 
   const handleClick = (i: number) => {
-    if (calculateWinner(squares) || isDraw || squares[i] || !timeLeft) {
+    if (isWin !== null || isDraw || squares[i] || !timeLeft) {
       return;
     }
     const nextSquares: Mark[] = squares.slice();
@@ -64,8 +64,8 @@ export const Board: FunctionComponent<BoardProps> = ({
     status = 'Winner: ' + winner;
   } else if (isDraw) {
     status = 'Draw';
-  } else if (!timeLeft) {
-    status = 'YOU LOSE';
+  } else if (isWin === false) {
+    status = 'YOU LOSE: ' + (xIsNext ? 'X' : 'O');
   } else {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
@@ -74,10 +74,7 @@ export const Board: FunctionComponent<BoardProps> = ({
     <ClassNames>
       {({ css }) => (
         <>
-          <div className={css(status)}>
-            {status}
-            {!timeLeft && !winner && !isDraw ? (xIsNext ? ': X' : ': O') : null}
-          </div>
+          <div className={css(status)}>{status}</div>
           <div
             className={css`
               ${boardRow};
