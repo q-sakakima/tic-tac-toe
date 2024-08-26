@@ -103,7 +103,7 @@ export const Game: FunctionComponent = () => {
   };
 
   const moves = history.map((history, move) => {
-    let description;
+    let description: string;
     if (move > 0) {
       description = `Go to move #${move} (${history.nextCoordinates?.x}, ${history.nextCoordinates?.y})`;
     } else {
