@@ -136,6 +136,8 @@ export default function Game() {
     ]);
     setCurrentMove(0);
     setTimeLeft(10);
+    setIsWin(null);
+    setIsDraw(null);
   };
 
   const handleSurrenderButton = () => {
