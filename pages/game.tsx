@@ -3,7 +3,7 @@ import { ResultCheckContext } from '../contexts/ResultCheckProvider';
 import { Mark, Coordinates } from '../types/index';
 import { Board } from '../components/Board';
 
-export const Game: FunctionComponent = () => {
+export default function Game() {
   const [history, setHistory] = useState<
     { squares: Mark[]; nextCoordinates: Coordinates }[]
   >([{ squares: Array(9).fill(null), nextCoordinates: null }]);
@@ -166,4 +166,4 @@ export const Game: FunctionComponent = () => {
       </div>
     </div>
   );
-};
+}
