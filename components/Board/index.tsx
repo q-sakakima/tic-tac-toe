@@ -20,11 +20,14 @@ export const Board: FunctionComponent<BoardProps> = memo(
     let winnersSquares: boolean[] = Array(boardSize ** 2).fill(false);
     let coordinates: Coordinates[] = [];
 
-    for (let i = 1; i <= boardSize ** 2; i++) {
-      for (let j = 1; j <= boardSize ** 2; j++) {
-        coordinates.push({ x: j, y: i });
+    coordinates = useMemo(() => {
+      for (let i = 1; i <= boardSize ** 2; i++) {
+        for (let j = 1; j <= boardSize ** 2; j++) {
+          coordinates.push({ x: j, y: i });
+        }
       }
-    }
+      return coordinates;
+    }, [boardSize]);
 
     const calculateWinner = (squares: Mark[]) => {
       for (let i = 0; i < lines.length; i++) {
