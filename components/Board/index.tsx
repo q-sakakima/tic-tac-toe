@@ -1,4 +1,10 @@
-import { FunctionComponent, memo, useContext, useMemo } from 'react';
+import {
+  FunctionComponent,
+  memo,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
 import { ResultCheckContext } from '../../contexts/ResultCheckProvider';
 import { Mark, Coordinates } from '../../types/index';
 import { Square } from '../Square';
@@ -6,7 +12,7 @@ import { css, ClassNames } from '@emotion/react';
 import { status, boardRow, boardRow3x3, boardRow4x4 } from './styled';
 
 export type BoardProps = {
-  squares: Mark[];
+  currentSquares: Mark[];
   lines: number[][];
   boardSize: number;
   timeLeft: number;
@@ -14,7 +20,7 @@ export type BoardProps = {
 };
 
 export const Board: FunctionComponent<BoardProps> = memo(
-  ({ squares, lines, boardSize, timeLeft, handlePlay }: BoardProps) => {
+  ({ currentSquares, lines, boardSize, timeLeft, handlePlay }: BoardProps) => {
     const { isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext } =
       useContext(ResultCheckContext);
     let winnersSquares: boolean[] = Array(boardSize ** 2).fill(false);
@@ -44,10 +50,10 @@ export const Board: FunctionComponent<BoardProps> = memo(
     };
 
     const handleClick = (i: number) => {
-      if (isWin !== null || isDraw || squares[i] || !timeLeft) {
+      if (isWin !== null || isDraw || currentSquares[i] || !timeLeft) {
         return;
       }
-      const nextSquares: Mark[] = squares.slice();
+      const nextSquares: Mark[] = currentSquares.slice();
       if (xIsNext) {
         nextSquares[i] = 'X';
       } else {
@@ -56,7 +62,7 @@ export const Board: FunctionComponent<BoardProps> = memo(
       handlePlay(nextSquares, coordinates[i]);
     };
 
-    const winner = calculateWinner(squares);
+    const winner = calculateWinner(currentSquares);
     let status: string;
     if (winner) {
       status = 'Winner: ' + winner;
@@ -83,7 +89,7 @@ export const Board: FunctionComponent<BoardProps> = memo(
                 return (
                   <Square
                     key={i}
-                    value={squares[i]}
+                    value={currentSquares[i]}
                     winnersSquare={winnersSquares[i]}
                     onSquareClick={() => handleClick(i)}
                   />

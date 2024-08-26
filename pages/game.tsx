@@ -156,7 +156,7 @@ export default function Game() {
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
         <Board
-          squares={currentSquares || []}
+          currentSquares={currentSquares || []}
           lines={lines}
           boardSize={boardSize}
           timeLeft={timeLeft}
