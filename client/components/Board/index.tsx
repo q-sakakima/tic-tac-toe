@@ -5,11 +5,14 @@ import {
   useContext,
   useMemo,
 } from 'react';
-import { ResultCheckContext } from '../../contexts/ResultCheckProvider';
+import { CheckContext } from '../../contexts/CheckProvider';
 import { Mark, Coordinates } from '../../types/index';
 import { Square } from '../Square';
 import { css, ClassNames } from '@emotion/react';
 import { status, boardRow, boardRow3x3, boardRow4x4 } from './styled';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3500');
 
 export type BoardProps = {
   currentSquares: Mark[];
@@ -22,7 +25,7 @@ export type BoardProps = {
 export const Board: FunctionComponent<BoardProps> = memo(
   ({ currentSquares, lines, boardSize, timeLeft, handlePlay }: BoardProps) => {
     const { isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext } =
-      useContext(ResultCheckContext);
+      useContext(CheckContext);
     let winnersSquares: boolean[] = Array(boardSize ** 2).fill(false);
     let coordinates: Coordinates[] = [];
 
@@ -69,7 +72,7 @@ export const Board: FunctionComponent<BoardProps> = memo(
     } else if (isDraw) {
       status = 'Draw';
     } else if (isWin === false) {
-      status = 'YOU LOSE: ' + (xIsNext ? 'X' : 'O');
+      status = 'Winner: ' + (!xIsNext ? 'X' : 'O');
     } else {
       status = 'Next player: ' + (xIsNext ? 'X' : 'O');
     }

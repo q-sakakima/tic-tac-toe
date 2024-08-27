@@ -5,9 +5,12 @@ import {
   useContext,
   useMemo,
 } from 'react';
-import { ResultCheckContext } from '../contexts/ResultCheckProvider';
+import { CheckContext } from '../contexts/CheckProvider';
 import { Mark, Coordinates } from '../types/index';
 import { Board } from '../components/Board';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3500');
 
 export default function Game() {
   const [history, setHistory] = useState<
@@ -16,10 +19,8 @@ export default function Game() {
   const [currentMove, setCurrentMove] = useState<number>(0);
   const [bgColor, setBgColor] = useState<boolean>(false);
   const [boardSize, setBoardSize] = useState<number>(3);
-  const currentSquares = history[currentMove]?.squares;
-
   const { isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext } =
-    useContext(ResultCheckContext);
+    useContext(CheckContext);
   const [timeLeft, setTimeLeft] = useState<number>(10);
 
   const lines: number[][] = useMemo(() => {
@@ -52,13 +53,46 @@ export default function Game() {
   }, [boardSize]);
 
   useEffect(() => {
+    socket.on('received_history', (history) => {
+      setHistory(history);
+      setCurrentMove(history.length - 1);
+    });
+
+    socket.on('received_nextMove', (nextMove) => {
+      setCurrentMove(nextMove);
+    });
+
+    socket.on('received_timeLeft', (timeLeft) => {
+      setTimeLeft(timeLeft);
+    });
+
+    socket.on('received_isWin', (isWin) => {
+      setIsWin(isWin);
+    });
+
+    socket.on('received_isDraw', (isDraw) => {
+      setIsDraw(isDraw);
+    });
+
+    socket.on('received_boardSize', (boardSize) => {
+      setBoardSize(boardSize);
+    });
+
+    return () => {
+      socket.off('received_history');
+      socket.off('received_nextMove');
+      socket.off('received_isWin');
+      socket.off('received_isDraw');
+    };
+  }, [setIsWin, setIsDraw]);
+
+  useEffect(() => {
     const checkDraw = lines.map((line) => {
       const [a, b, c, d] = line;
-
-      const squareA = currentSquares[a];
-      const squareB = currentSquares[b];
-      const squareC = currentSquares[c];
-      const squareD = d === undefined ? null : currentSquares[d];
+      const squareA = history[currentMove].squares[a];
+      const squareB = history[currentMove].squares[b];
+      const squareC = history[currentMove].squares[c];
+      const squareD = d === undefined ? null : history[currentMove].squares[d];
 
       const containX = [squareA, squareB, squareC, squareD].includes('X');
       const containO = [squareA, squareB, squareC, squareD].includes('O');
@@ -69,11 +103,11 @@ export default function Game() {
     if (!checkDraw.includes(false)) {
       setIsDraw(true);
     }
-  }, [currentSquares, lines]);
+  }, [history, currentMove, lines, setIsDraw]);
 
   useEffect(() => {
     setXIsNext(currentMove % 2 === 0);
-  }, [currentMove]);
+  }, [currentMove, setXIsNext]);
 
   useEffect(() => {
     if (isDraw || isWin !== null) {
@@ -84,39 +118,31 @@ export default function Game() {
     } else {
       setIsWin(false);
     }
-  }, [timeLeft]);
+  }, [timeLeft, isDraw, isWin, setIsWin]);
 
   const handlePlay = (nextSquares: Mark[], nextCoordinates: Coordinates) => {
     const nextHistory = [
       ...history.slice(0, currentMove + 1),
       { squares: nextSquares, coordinates: nextCoordinates },
     ];
-    setHistory(nextHistory);
-    setCurrentMove(nextHistory.length - 1);
-    setTimeLeft(10);
+    socket.emit('send_history', nextHistory);
+    socket.emit('send_timeLeft', 10);
   };
 
   const jumpTo = (nextMove: number, description: string) => {
-    setCurrentMove(nextMove);
+    socket.emit('send_nextMove', nextMove);
     if (description === 'Go to game start') {
-      setIsWin(null);
-      setIsDraw(null);
-      setTimeLeft(10);
-      setHistory([history[0]]);
-    } else if (nextMove === history.length - 1) {
-      setIsWin(false);
-    } else {
-      setIsWin(null);
+      socket.emit('send_isWin', null);
+      socket.emit('send_isDraw', null);
+      socket.emit('send_timeLeft', 10);
     }
   };
 
-  const moves = history.map((history, move) => {
-    let description: string;
-    if (move > 0) {
-      description = `Go to move #${move} (${history.coordinates?.x}, ${history.coordinates?.y})`;
-    } else {
-      description = 'Go to game start';
-    }
+  const moves = history.map((_, move) => {
+    const description = move
+      ? `Go to move #${move} (${history[move].coordinates?.x}, ${history[move].coordinates?.y})`
+      : 'Go to game start';
+
     return (
       <li key={move}>
         <button onClick={() => jumpTo(move, description)}>{description}</button>
@@ -131,32 +157,29 @@ export default function Game() {
   const bgColorClass = bgColor ? 'dark-theme' : '';
 
   const handleBoardSize = () => {
-    if (boardSize === 3) {
-      setBoardSize(4);
-    } else if (boardSize === 4) {
-      setBoardSize(3);
-    }
-    setHistory([
+    const newSize = boardSize === 3 ? 4 : 3;
+    socket.emit('send_isWin', newSize);
+    socket.emit('send_history', [
       {
-        squares: Array(boardSize === 3 ? 3 ** 2 : 4 ** 2).fill(null),
+        squares: Array(newSize ** 2).fill(null),
         coordinates: null,
       },
     ]);
+    socket.emit('send_isWin', null);
+    socket.emit('send_isDraw', null);
+    socket.emit('send_timeLeft', 10);
     setCurrentMove(0);
-    setTimeLeft(10);
-    setIsWin(null);
-    setIsDraw(null);
   };
 
   const handleSurrenderButton = () => {
-    setIsWin(false);
+    socket.emit('send_isWin', false);
   };
 
   return (
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
         <Board
-          currentSquares={currentSquares || []}
+          currentSquares={history[currentMove].squares || []}
           lines={lines}
           boardSize={boardSize}
           timeLeft={timeLeft}
@@ -168,9 +191,9 @@ export default function Game() {
         <ol>{moves}</ol>
       </div>
       <div className="bottom-column">
-        <button onClick={() => handleSurrenderButton()}>Surrender</button>
-        <button onClick={() => handleBGColor()}>Change BGColor</button>
-        <button onClick={() => handleBoardSize()}>
+        <button onClick={handleSurrenderButton}>Surrender</button>
+        <button onClick={handleBGColor}>Change BGColor</button>
+        <button onClick={handleBoardSize}>
           {boardSize === 3 ? 'Change 4x4' : 'Change 3x3'}
         </button>
       </div>
