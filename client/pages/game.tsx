@@ -151,7 +151,7 @@ export default function Game() {
 
   const handleBoardSize = () => {
     const newSize = boardSize === 3 ? 4 : 3;
-    socket.emit('send_isWin', newSize);
+    socket.emit('send_boardSize', newSize);
     socket.emit('send_history', [
       {
         squares: Array(newSize ** 2).fill(null),
