@@ -77,13 +77,6 @@ export default function Game() {
     socket.on('received_boardSize', (boardSize) => {
       setBoardSize(boardSize);
     });
-
-    return () => {
-      socket.off('received_history');
-      socket.off('received_nextMove');
-      socket.off('received_isWin');
-      socket.off('received_isDraw');
-    };
   }, [setIsWin, setIsDraw]);
 
   useEffect(() => {
