@@ -193,7 +193,7 @@ export default function Game() {
         />
       </div>
       <div className="game-info">
-        <div>{`You are: ${playerMark}`}</div>
+        <div>{`You are ${playerMark}.`}</div>
         {timeLeft ? `${timeLeft} seconds left.` : 'Time is Up.'}
         <ol>{moves}</ol>
       </div>
