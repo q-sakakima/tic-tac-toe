@@ -11,9 +11,15 @@ const io = new Server(server, {
 });
 
 const PORT = 3500;
+let players = {};
 
 io.on("connection", (socket) => {
-  console.log("Connect!!!");
+  console.log("A user connected: " + socket.id);
+
+  const mark = Object.keys(players).length % 2 === 0 ? "X" : "O";
+  players[socket.id] = mark;
+  socket.emit("send_playerMark", mark);
+  io.emit("update_players", players);
 
   socket.on("send_history", (history) => {
     io.emit("received_history", history);
@@ -40,8 +46,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Disconnect!!!");
+    console.log("A user disconnected: " + socket.id);
+    delete players[socket.id];
+    io.emit("update_players", players);
   });
 });
 
-server.listen(PORT, () => console.log(`server is running on ${PORT}`));
+server.listen(PORT, () => console.log(`Server is running on ${PORT}`));

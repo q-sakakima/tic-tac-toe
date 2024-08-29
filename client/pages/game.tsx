@@ -1,10 +1,4 @@
-import {
-  FunctionComponent,
-  useState,
-  useEffect,
-  useContext,
-  useMemo,
-} from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import { CheckContext } from '../contexts/CheckProvider';
 import { Mark, Coordinates } from '../types/index';
 import { Board } from '../components/Board';
@@ -22,6 +16,8 @@ export default function Game() {
   const { isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext } =
     useContext(CheckContext);
   const [timeLeft, setTimeLeft] = useState<number>(10);
+  const [playerMark, setPlayerMark] = useState<Mark | null>(null);
+  const [gameFull, setGameFull] = useState<boolean>(false);
 
   const lines: number[][] = useMemo(() => {
     if (boardSize === 3) {
@@ -53,6 +49,10 @@ export default function Game() {
   }, [boardSize]);
 
   useEffect(() => {
+    socket.on('send_playerMark', (mark: Mark) => {
+      setPlayerMark(mark);
+    });
+
     socket.on('received_history', (history) => {
       setHistory(history);
       setCurrentMove(history.length - 1);
@@ -77,43 +77,48 @@ export default function Game() {
     socket.on('received_boardSize', (boardSize) => {
       setBoardSize(boardSize);
     });
-  }, [setIsWin, setIsDraw]);
 
-  useEffect(() => {
-    const checkDraw = lines.map((line) => {
-      const [a, b, c, d] = line;
-      const squareA = history[currentMove].squares[a];
-      const squareB = history[currentMove].squares[b];
-      const squareC = history[currentMove].squares[c];
-      const squareD = d === undefined ? null : history[currentMove].squares[d];
-
-      const containX = [squareA, squareB, squareC, squareD].includes('X');
-      const containO = [squareA, squareB, squareC, squareD].includes('O');
-
-      return containX && containO;
+    socket.on('game_full', (message) => {
+      alert(message);
+      setGameFull(true);
     });
 
-    if (!checkDraw.includes(false)) {
-      setIsDraw(true);
-    }
-  }, [history, currentMove, lines, setIsDraw]);
+    return () => {
+      socket.off('send_playerMark');
+      socket.off('received_history');
+      socket.off('received_nextMove');
+      socket.off('received_timeLeft');
+      socket.off('received_isWin');
+      socket.off('received_isDraw');
+      socket.off('received_boardSize');
+      socket.off('game_full');
+    };
+  }, [setIsWin, setIsDraw, setTimeLeft]);
 
   useEffect(() => {
     setXIsNext(currentMove % 2 === 0);
   }, [currentMove, setXIsNext]);
 
   useEffect(() => {
-    if (isDraw || isWin !== null) {
+    if (isWin !== null || isDraw) {
       return;
-    } else if (timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    }
+    if (timeLeft > 0) {
+      const timer = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+        socket.emit('send_timeLeft', timeLeft - 1);
+      }, 1000);
       return () => clearTimeout(timer);
     } else {
       setIsWin(false);
+      socket.emit('send_isWin', false);
     }
-  }, [timeLeft, isDraw, isWin, setIsWin]);
+  }, [timeLeft, isWin, isDraw, setIsWin]);
 
   const handlePlay = (nextSquares: Mark[], nextCoordinates: Coordinates) => {
+    if (playerMark !== (xIsNext ? 'X' : 'O')) {
+      return;
+    }
     const nextHistory = [
       ...history.slice(0, currentMove + 1),
       { squares: nextSquares, coordinates: nextCoordinates },
@@ -168,6 +173,10 @@ export default function Game() {
     socket.emit('send_isWin', false);
   };
 
+  if (gameFull) {
+    return <div>The game is full. Please try again later.</div>;
+  }
+
   return (
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
@@ -177,9 +186,14 @@ export default function Game() {
           boardSize={boardSize}
           timeLeft={timeLeft}
           handlePlay={handlePlay}
+          playerMark={playerMark}
+          xIsNext={xIsNext}
         />
       </div>
       <div className="game-info">
+        <div>
+          {playerMark ? `You are: ${playerMark}` : 'Waiting for player mark...'}
+        </div>
         {timeLeft ? `${timeLeft} seconds left.` : 'Time is Up.'}
         <ol>{moves}</ol>
       </div>
