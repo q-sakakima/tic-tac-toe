@@ -1,47 +1,55 @@
-import { FunctionComponent, useState, useEffect, useContext } from 'react';
+import {
+  FunctionComponent,
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+} from 'react';
 import { ResultCheckContext } from '../contexts/ResultCheckProvider';
 import { Mark, Coordinates } from '../types/index';
 import { Board } from '../components/Board';
 
 export default function Game() {
   const [history, setHistory] = useState<
-    { squares: Mark[]; nextCoordinates: Coordinates }[]
-  >([{ squares: Array(9).fill(null), nextCoordinates: null }]);
+    { squares: Mark[]; coordinates: Coordinates }[]
+  >([{ squares: Array(9).fill(null), coordinates: null }]);
   const [currentMove, setCurrentMove] = useState<number>(0);
   const [bgColor, setBgColor] = useState<boolean>(false);
   const [boardSize, setBoardSize] = useState<number>(3);
   const currentSquares = history[currentMove]?.squares;
 
-  let lines: number[][] = [];
   const { isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext } =
     useContext(ResultCheckContext);
   const [timeLeft, setTimeLeft] = useState<number>(10);
 
-  if (boardSize === 3) {
-    lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-  } else if (boardSize === 4) {
-    lines = [
-      [0, 1, 2, 3],
-      [4, 5, 6, 7],
-      [8, 9, 10, 11],
-      [12, 13, 14, 15],
-      [0, 4, 8, 12],
-      [1, 5, 9, 13],
-      [2, 6, 10, 14],
-      [3, 7, 11, 15],
-      [0, 5, 10, 15],
-      [3, 6, 9, 12],
-    ];
-  }
+  const lines: number[][] = useMemo(() => {
+    if (boardSize === 3) {
+      return [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+      ];
+    } else if (boardSize === 4) {
+      return [
+        [0, 1, 2, 3],
+        [4, 5, 6, 7],
+        [8, 9, 10, 11],
+        [12, 13, 14, 15],
+        [0, 4, 8, 12],
+        [1, 5, 9, 13],
+        [2, 6, 10, 14],
+        [3, 7, 11, 15],
+        [0, 5, 10, 15],
+        [3, 6, 9, 12],
+      ];
+    }
+    return [];
+  }, [boardSize]);
 
   useEffect(() => {
     const checkDraw = lines.map((line) => {
@@ -68,7 +76,7 @@ export default function Game() {
   }, [currentMove]);
 
   useEffect(() => {
-    if (isDraw || isWin) {
+    if (isDraw || isWin !== null) {
       return;
     } else if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -81,7 +89,7 @@ export default function Game() {
   const handlePlay = (nextSquares: Mark[], nextCoordinates: Coordinates) => {
     const nextHistory = [
       ...history.slice(0, currentMove + 1),
-      { squares: nextSquares, nextCoordinates: nextCoordinates },
+      { squares: nextSquares, coordinates: nextCoordinates },
     ];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
@@ -105,7 +113,7 @@ export default function Game() {
   const moves = history.map((history, move) => {
     let description: string;
     if (move > 0) {
-      description = `Go to move #${move} (${history.nextCoordinates?.x}, ${history.nextCoordinates?.y})`;
+      description = `Go to move #${move} (${history.coordinates?.x}, ${history.coordinates?.y})`;
     } else {
       description = 'Go to game start';
     }
@@ -131,11 +139,13 @@ export default function Game() {
     setHistory([
       {
         squares: Array(boardSize === 3 ? 3 ** 2 : 4 ** 2).fill(null),
-        nextCoordinates: null,
+        coordinates: null,
       },
     ]);
     setCurrentMove(0);
     setTimeLeft(10);
+    setIsWin(null);
+    setIsDraw(null);
   };
 
   const handleSurrenderButton = () => {
@@ -146,7 +156,7 @@ export default function Game() {
     <div className={`game ${bgColorClass}`}>
       <div className="game-board">
         <Board
-          squares={currentSquares || []}
+          currentSquares={currentSquares || []}
           lines={lines}
           boardSize={boardSize}
           timeLeft={timeLeft}
