@@ -21,6 +21,11 @@ io.on("connection", (socket) => {
     return;
   }
 
+  if (socket.handshake.headers["origin"] !== "http://localhost:3000") {
+    socket.disconnect();
+    return;
+  }
+
   const mark = Object.keys(players).length % 2 === 0 ? "X" : "O";
   players[socket.id] = mark;
   socket.emit("send_playerMark", mark);
