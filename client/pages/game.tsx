@@ -4,7 +4,7 @@ import { Mark, Coordinates } from '../types/index';
 import { Board } from '../components/Board';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3500');
+let socket: any;
 
 export default function Game() {
   const [history, setHistory] = useState<
@@ -49,49 +49,51 @@ export default function Game() {
   }, [boardSize]);
 
   useEffect(() => {
+    if (!socket) {
+      socket = io('http://localhost:3500');
+    }
+
     socket.on('send_playerMark', (mark: Mark) => {
       setPlayerMark(mark);
     });
 
-    socket.on('received_history', (history) => {
-      setHistory(history);
-      setCurrentMove(history.length - 1);
-    });
+    socket.on(
+      'received_history',
+      (history: { squares: Mark[]; coordinates: Coordinates }[]) => {
+        setHistory(history);
+        setCurrentMove(history.length - 1);
+      },
+    );
 
-    socket.on('received_nextMove', (nextMove) => {
+    socket.on('received_nextMove', (nextMove: number) => {
       setCurrentMove(nextMove);
     });
 
-    socket.on('received_timeLeft', (timeLeft) => {
+    socket.on('received_timeLeft', (timeLeft: number) => {
       setTimeLeft(timeLeft);
     });
 
-    socket.on('received_isWin', (isWin) => {
+    socket.on('received_isWin', (isWin: boolean | null) => {
       setIsWin(isWin);
     });
 
-    socket.on('received_isDraw', (isDraw) => {
+    socket.on('received_isDraw', (isDraw: boolean | null) => {
       setIsDraw(isDraw);
     });
 
-    socket.on('received_boardSize', (boardSize) => {
+    socket.on('received_boardSize', (boardSize: number) => {
       setBoardSize(boardSize);
     });
 
-    socket.on('game_full', (message) => {
+    socket.on('game_full', (message: string) => {
       alert(message);
       setGameFull(true);
     });
 
     return () => {
-      socket.off('send_playerMark');
-      socket.off('received_history');
-      socket.off('received_nextMove');
-      socket.off('received_timeLeft');
-      socket.off('received_isWin');
-      socket.off('received_isDraw');
-      socket.off('received_boardSize');
-      socket.off('game_full');
+      if (socket) {
+        socket.disconnect();
+      }
     };
   }, [setIsWin, setIsDraw, setTimeLeft]);
 
@@ -192,7 +194,7 @@ export default function Game() {
       </div>
       <div className="game-info">
         <div>
-          {playerMark ? `You are: ${playerMark}` : 'Waiting for player mark...'}
+          {playerMark ? `You are: ${playerMark}` : 'Waiting for player...'}
         </div>
         {timeLeft ? `${timeLeft} seconds left.` : 'Time is Up.'}
         <ol>{moves}</ol>
