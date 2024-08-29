@@ -15,14 +15,13 @@ let players = {};
 io.on("connection", (socket) => {
   console.log("A user connected: " + socket.id);
 
-  if (Object.keys(players).length >= 3) {
+  if (Object.keys(players).length >= 2) {
     socket.emit("game_full", "The game is full. Please try again later.");
     socket.disconnect();
     return;
   }
 
-  // 元のコード: const mark = Object.keys(players).length % 2 === 0 ? "X" : "O";
-  const mark = Object.keys(players).length % 2 === 0 ? "O" : "X";
+  const mark = Object.keys(players).length % 2 === 0 ? "X" : "O";
   players[socket.id] = mark;
   socket.emit("send_playerMark", mark);
   io.emit("update_players", players);
