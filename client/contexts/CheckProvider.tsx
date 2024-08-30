@@ -13,7 +13,7 @@ type ProviderProps = {
   children: ReactNode;
 };
 
-export const ResultCheckContext = createContext<ResultCheckContextType>({
+export const CheckContext = createContext<ResultCheckContextType>({
   isWin: null,
   setIsWin: () => {},
   isDraw: null,
@@ -28,10 +28,17 @@ export const ResultCheckProvider = ({ children }: ProviderProps) => {
   const [xIsNext, setXIsNext] = useState<boolean>(true);
 
   return (
-    <ResultCheckContext.Provider
-      value={{ isWin, setIsWin, isDraw, setIsDraw, xIsNext, setXIsNext }}
+    <CheckContext.Provider
+      value={{
+        isWin,
+        setIsWin,
+        isDraw,
+        setIsDraw,
+        xIsNext,
+        setXIsNext,
+      }}
     >
       {children}
-    </ResultCheckContext.Provider>
+    </CheckContext.Provider>
   );
 };
